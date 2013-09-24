@@ -60,12 +60,90 @@
             },
             { fileName: name });
     }
+    
+    //**********************************
+    
+    //Code for Compass----------------
+    
+    //***********************************
+    
+     // The watch id references the current `watchHeading`
+    var watchID = null;
+    
+    // Wait for device API libraries to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    // device APIs are available
+    //
+    function onDeviceReady() {
+        startWatch();
+        checkConnection(); // Checking connection....
+    }
+    
+    // Start watching the compass
+    //
+    function startWatch() {
+
+        // Update compass every 3 seconds
+        var options = { frequency: 3000 };
+
+        watchID = navigator.compass.watchHeading(onSuccess, onError, options);
+    }
+
+    // Stop watching the compass
+    //
+    function stopWatch() {
+        if (watchID) {
+            navigator.compass.clearWatch(watchID);
+            watchID = null;
+        }
+    }
+    // onSuccess: Get the current heading
+    //
+    function onSuccess(heading) {
+        var element = document.getElementById('heading');
+        element.innerHTML = 'Heading: ' + heading.magneticHeading;
+    }
+
+    // onError: Failed to get the heading
+    //
+    function onError(compassError) {
+        alert('Compass error: ' + compassError.code);
+    }
+    
+    //**********************************
+    
+    //Code for checkConnection----------------
+    
+    //***********************************
+    function checkConnection() {
+            var networkState = navigator.connection.type;
+
+            var states = {};
+            states[Connection.UNKNOWN]  = 'Unknown connection';
+            states[Connection.ETHERNET] = 'Ethernet connection';
+            states[Connection.WIFI]     = 'WiFi connection';
+            states[Connection.CELL_2G]  = 'Cell 2G connection';
+            states[Connection.CELL_3G]  = 'Cell 3G connection';
+            states[Connection.CELL_4G]  = 'Cell 4G connection';
+            states[Connection.CELL]     = 'Cell generic connection';
+            states[Connection.NONE]     = 'No network connection';
+
+            alert('Connection type: ' + states[networkState]);
+        }
+
+
 
     </script>
     </head>
     <body>
         <button onclick="captureAudio();">Capture Audio</button> <br>
         <button onclick="captureImage();">Capture Image</button> <br>
-        <button onclick="captureVideo();">Capture Video</button> <br>
+        <button onclick="captureVideo();">Capture Video</button> <br><br>
+        
+    	<button onclick="startWatch();">Start Watching</button>
+    	<button onclick="stopWatch();">Stop Watching</button>
+    	<div id="heading">Waiting for heading...</div>
     </body>
 </html>
